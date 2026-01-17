@@ -8,7 +8,11 @@ The system processes a video feed, detects people using a YOLOv8 model, evaluate
 
 This project is suitable for hackathons, demonstrations, academic projects, and as a base for real-world safety monitoring systems.
 
----
+
+
+---<img width="1892" height="907" alt="Screenshot 2026-01-17 114107" src="https://github.com/user-attachments/assets/aed24729-d431-454d-82e7-bf79ab7063b7" />
+<img width="1903" height="895" alt="Screenshot 2026-01-17 114619" src="https://github.com/user-attachments/assets/5d90c7d0-3cd7-4af1-a260-40b9f4c867eb" />
+
 
 ## Key Features
 
