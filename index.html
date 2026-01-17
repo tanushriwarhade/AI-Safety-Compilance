@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Safety Compliance System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+/* ================= GLOBAL ================= */
+body {
+  background: radial-gradient(circle at top, #1e3c72, #0f2027);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI";
+  color: #fff;
+  scroll-behavior: smooth;
+}
+section { padding: 100px 15px; }
+
+/* ================= NAVBAR ================= */
+.navbar {
+  backdrop-filter: blur(12px);
+  background: rgba(0,0,0,0.45);
+}
+
+/* ================= CARD ================= */
+.card-glass {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(14px);
+  border-radius: 18px;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.45);
+}
+
+/* ================= BUTTON ================= */
+.btn-main {
+  background: linear-gradient(135deg,#00c6ff,#0072ff);
+  border: none;
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 0 25px rgba(0,198,255,0.5);
+}
+.btn-main:hover { transform: scale(1.05); }
+
+/* ================= STATS ================= */
+.stat-value { font-size: 2.4rem; font-weight: 700; }
+
+/* ================= VIDEO ================= */
+video {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* ================= TABLE ================= */
+.table { color: white; }
+.table thead {
+  background: linear-gradient(135deg,#0072ff,#00c6ff);
+}
+
+/* ================= STATUS ================= */
+.ok { color:#4ade80; }
+.warn { color:#facc15; }
+.bad { color:#f87171; }
+
+/* ================= LEGEND ================= */
+.legend-box span {
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:12px;
+  font-size:0.85rem;
+  margin:4px;
+}
+.legend-green { background:#22c55e; }
+.legend-yellow { background:#eab308; }
+.legend-red { background:#ef4444; }
+
+/* ================= COUNTDOWN ================= */
+#countdown {
+  font-size:1.3rem;
+  font-weight:600;
+  margin:10px 0;
+  color:#facc15;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-dark fixed-top">
+  <div class="container-fluid">
+    <span class="navbar-brand fw-bold">AI Safety Compliance</span>
+    <div>
+      <a class="nav-link d-inline text-white" href="#dashboard">Dashboard</a>
+      <a class="nav-link d-inline text-white" href="#live">Live</a>
+      <a class="nav-link d-inline text-white" href="#analytics">Analytics</a>
+      <a class="nav-link d-inline text-white" href="#logs">Logs</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= DASHBOARD ================= -->
+<section id="dashboard" class="text-center">
+  <h1 class="fw-bold mb-3" style="margin-top:60px;
+    background:linear-gradient(90deg,#00c6ff,#0072ff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;">
+    Smart PPE Compliance Monitoring
+  </h1>
+
+  <button class="btn-main" onclick="startDetection()">▶ Start Detection</button>
+  <div id="status" class="mt-3 fw-semibold"></div>
+
+  <div class="container mt-5">
+    <div class="row g-4">
+      <div class="col-md-3 col-6"><div class="card-glass"><div>Detections</div><div class="stat-value" id="total">0</div></div></div>
+      <div class="col-md-3 col-6"><div class="card-glass"><div>Violations</div><div class="stat-value text-danger" id="violations">0</div></div></div>
+      <div class="col-md-3 col-6"><div class="card-glass"><div>Compliant</div><div class="stat-value text-success" id="compliant">0</div></div></div>
+      <div class="col-md-3 col-6"><div class="card-glass"><div>System</div><div class="stat-value ok">ONLINE</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LIVE ================= -->
+<section id="live">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="card-glass text-center">
+          <h5 id="videoTitle">Sample Video (Before AI)</h5>
+          <div id="countdown" style="display:none;"></div>
+
+          <video id="liveVideo" autoplay muted controls loop>
+            <source src="/video/sample.mp4" type="video/mp4">
+          </video>
+
+          <div class="legend-box mt-3">
+            <span class="legend-green">LOW</span>
+            <span class="legend-yellow">MEDIUM</span>
+            <span class="legend-red">HIGH</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card-glass">
+          <h5>System Status</h5>
+          <p>Camera: <span class="ok">Connected</span></p>
+          <p>AI Model: <span class="ok">YOLOv8</span></p>
+          <p>Detection: <span id="detectStatus" class="warn">Idle</span></p>
+          <p>Escalation Engine: <span class="warn">Active</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ANALYTICS ================= -->
+<section id="analytics">
+  <div class="container">
+    <div class="card-glass">
+      <h3>Safety Analytics</h3>
+      <div class="row g-3">
+        <div class="col-md-4"><div class="card-glass">Risk Distribution</div></div>
+        <div class="col-md-4"><div class="card-glass">Violation Trends</div></div>
+        <div class="col-md-4"><div class="card-glass">PPE Coverage</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LOGS ================= -->
+<section id="logs">
+  <div class="container">
+    <div class="card-glass">
+      <h3>Live Compliance Logs</h3>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th><th>Detected</th><th>Missing</th>
+              <th>Risk</th><th>Escalation</th><th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="logRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="text-center py-4 opacity-75">
+  © Hackathon | AI Safety Compliance System
+</footer>
+
+<!-- ================= JS ================= -->
+<script>
+const video = document.getElementById("liveVideo");
+const title = document.getElementById("videoTitle");
+const countdown = document.getElementById("countdown");
+const detectStatus = document.getElementById("detectStatus");
+
+function startDetection(){
+  document.getElementById("status").innerText = "⏳ Detection running...";
+  detectStatus.innerText = "Processing";
+
+  fetch("/start");
+  startCountdown(5);
+}
+
+function startCountdown(sec){
+  countdown.style.display="block";
+  let t=sec;
+  countdown.innerText=`Switching to detection video in ${t}s`;
+
+  const i=setInterval(()=>{
+    t--;
+    countdown.innerText=`Switching to detection video in ${t}s`;
+    if(t<=0){
+      clearInterval(i);
+      countdown.style.display="none";
+      switchVideo();
+    }
+  },1000);
+}
+
+function switchVideo(){
+  title.innerText="Detection Video (After AI)";
+  detectStatus.innerText="Live";
+  video.pause();
+  video.src="/video/output_annotated.mp4?t="+Date.now();
+  video.load();
+  video.play();
+}
+
+function loadLogs(){
+  fetch("/logs").then(r=>r.json()).then(rows=>{
+    let html="", v=0;
+    rows.forEach(r=>{
+      if(r[2]) v++;
+      html+=`<tr>
+        <td>${r[0]}</td><td>${r[1]}</td>
+        <td class="text-danger">${r[2]}</td>
+        <td>${r[4]}</td><td>${r[6]}</td><td>${r[9]}</td>
+      </tr>`;
+    });
+    logRows.innerHTML=html;
+    total.innerText=rows.length;
+    violations.innerText=v;
+    compliant.innerText=rows.length-v;
+  });
+}
+
+setInterval(loadLogs,500);
+loadLogs();
+</script>
+
+</body>
+</html>
